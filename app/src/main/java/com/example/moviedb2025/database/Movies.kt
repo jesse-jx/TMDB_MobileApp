@@ -6,7 +6,7 @@ class Movies {
     fun getMovies(): List<Movie>{
         return listOf(
             Movie(
-                1,
+                950387,
                 "A Minecraft Movie",
                 "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg",
                 "/2Nti3gYAX513wvhp8IiLL6ZDyOm.jpg",
@@ -15,7 +15,7 @@ class Movies {
                 listOf(10751, 35, 12, 14)
             ),
             Movie(
-                2,
+                822119,
                 "Captain America: Brave New World",
                 "/4YFyYcUPfrbpj6VpgWh7xoUnwLA.jpg",
                 "/jhL4eTpccoZSVehhcR8DKLSBHZy.jpg",
@@ -24,7 +24,7 @@ class Movies {
                 listOf(28, 53, 878)
             ),
             Movie(
-                3,
+                324544,
                 "In the Lost Lands",
                 "/iHf6bXPghWB6gT8kFkL1zo00x6X.jpg",
                 "/op3qmNhvwEvyT7UFyPbIfQmKriB.jpg",
@@ -33,7 +33,7 @@ class Movies {
                 listOf(14, 12, 28)
             ),
             Movie(
-                4,
+                696506,
                 "Mickey 17",
                 "/edKpE9B5qN3e559OuMCLZdW1iBZ.jpg",
                 "/hNA73rnG4PjSwgojaC2gbO1f8Rt.jpg",
@@ -42,7 +42,7 @@ class Movies {
                 listOf(878, 35, 12)
             ),
             Movie(
-                5,
+                762509,
                 "Mufasa: The Lion King",
                 "/lurEK87kukWNaHd0zYnsi3yzJrs.jpg",
                 "/1w8kutrRucTd3wlYyu5QlUDMiG1.jpg",
