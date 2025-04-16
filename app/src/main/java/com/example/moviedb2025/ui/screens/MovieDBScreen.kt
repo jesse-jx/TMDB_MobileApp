@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +38,7 @@ import com.example.moviedb2025.R
 import com.example.moviedb2025.database.Genres
 import com.example.moviedb2025.database.Movies
 import com.example.moviedb2025.models.Movie
+import com.example.moviedb2025.ui.screens.FavouritesScreen
 import com.example.moviedb2025.ui.screens.MovieDetailScreen
 import com.example.moviedb2025.ui.screens.MovieListItemCard
 import com.example.moviedb2025.ui.screens.MovieListScreen
@@ -45,7 +48,8 @@ import com.example.moviedb2025.viewmodel.MovieDBViewModel
 
 enum class MovieDBScreen(@StringRes val title: Int){
     List(title = R.string.app_name),
-    Detail(title = R.string.movie_detail)
+    Detail(title = R.string.movie_detail),
+    Favourites(title = R.string.favourited_movies)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,13 +58,14 @@ fun MovieDBAppBar(
     currScreen: MovieDBScreen,
     canNavigateBack:Boolean,
     navigateUp: () -> Unit,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ){
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = {Text(stringResource(currScreen.title))},
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary
             //titleContentColor = MaterialTheme.colorScheme.primary
         ),
         modifier = modifier,
@@ -75,10 +80,11 @@ fun MovieDBAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /* do something */ }) {
+            IconButton(onClick = { navController.navigate(MovieDBScreen.Favourites.name)}) {
                 Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = "Menu"
+                    imageVector = Icons.Outlined.FavoriteBorder,
+                    tint = Color.Black,
+                    contentDescription = "Favourites",
                 )
             }
         },
@@ -98,7 +104,8 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
         topBar = {
             MovieDBAppBar(currScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
+                navController = navController
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
@@ -124,6 +131,9 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
                     MovieDetailScreen(movie = movie,
                         modifier = Modifier)
                 }
+            }
+            composable(route = MovieDBScreen.Favourites.name) {
+                FavouritesScreen(modifier = Modifier.fillMaxSize())
             }
         }
 
