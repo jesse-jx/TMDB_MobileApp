@@ -143,20 +143,20 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MovieDB2025Theme {
-        MovieListItemCard(
-            movie = Movie(
-                2,
-                "Captain America: Brave New World",
-                "/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg",
-                "/gsQJOfeW45KLiQeEIsom94QPQwb.jpg",
-                "2025-02-12",
-                "When a group of radical activists take over an energy company's annual gala, seizing 300 hostages, an ex-soldier turned window cleaner suspended 50 storeys up on the outside of the building must save those trapped inside, including her younger brother.",
-                listOf(28, 53, 878)
-            ), {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    MovieDB2025Theme {
+//        MovieListItemCard(
+//            movie = Movie(
+//                2,
+//                "Captain America: Brave New World",
+//                "/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg",
+//                "/gsQJOfeW45KLiQeEIsom94QPQwb.jpg",
+//                "2025-02-12",
+//                "When a group of radical activists take over an energy company's annual gala, seizing 300 hostages, an ex-soldier turned window cleaner suspended 50 storeys up on the outside of the building must save those trapped inside, including her younger brother.",
+//                listOf(28, 53, 878)
+//            ), {}
+//        )
+//    }
+//}

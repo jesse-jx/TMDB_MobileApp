@@ -25,8 +25,10 @@ import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -49,6 +52,7 @@ fun MovieDetailScreen(movie: Movie,
                       modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val tmdbUrl = "https://www.themoviedb.org/movie/${movie.id}"
+    val imdbUrl = "https://www.imdb.com/title/${movie.imdbId}"
 
     Column{
         Box {
@@ -111,7 +115,18 @@ fun MovieDetailScreen(movie: Movie,
                     }
                 }
             }
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(10.dp))
+
+            OutlinedButton(onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, imdbUrl.toUri())
+                context.startActivity(intent)
+            }) {
+                Text(
+                    text = "Open in IMDb",
+                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
+                )
+            }
+            //Spacer(modifier = Modifier.size(20.dp))
         }
     }
 }
