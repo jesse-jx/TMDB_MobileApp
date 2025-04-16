@@ -1,15 +1,14 @@
 @file:kotlin.OptIn(ExperimentalMaterial3Api::class)
-@file:Suppress("INFERRED_TYPE_VARIABLE_INTO_EMPTY_INTERSECTION_WARNING")
 
 package com.example.myapplication0.ui.screens
 
-import androidx.annotation.OptIn
+import kotlin.OptIn
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,11 +16,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.moviedb2025.R
+import com.example.moviedb2025.database.Genres
 import com.example.moviedb2025.database.Movies
 import com.example.moviedb2025.models.Movie
 import com.example.moviedb2025.ui.screens.MovieDetailScreen
@@ -56,8 +58,10 @@ fun MovieDBAppBar(
 ){
     TopAppBar(
         title = {Text(stringResource(currScreen.title))},
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+            //titleContentColor = MaterialTheme.colorScheme.primary
         ),
         modifier = modifier,
         navigationIcon = {
@@ -69,7 +73,15 @@ fun MovieDBAppBar(
                     )
                 }
             }
-        }
+        },
+        actions = {
+            IconButton(onClick = { /* do something */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Menu"
+                )
+            }
+        },
     )
 }
 @Composable
@@ -88,7 +100,8 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() }
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
         NavHost(
@@ -129,7 +142,8 @@ fun GreetingPreview() {
                 "/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg",
                 "/gsQJOfeW45KLiQeEIsom94QPQwb.jpg",
                 "2025-02-12",
-                "When a group of radical activists take over an energy company's annual gala, seizing 300 hostages, an ex-soldier turned window cleaner suspended 50 storeys up on the outside of the building must save those trapped inside, including her younger brother."
+                "When a group of radical activists take over an energy company's annual gala, seizing 300 hostages, an ex-soldier turned window cleaner suspended 50 storeys up on the outside of the building must save those trapped inside, including her younger brother.",
+                listOf(28, 53, 878)
             ), {}
         )
     }

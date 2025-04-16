@@ -1,6 +1,6 @@
 package com.example.moviedb2025.utils
 
-object Constans {
+object Constants {
     const val POSTER_IMAGE_BASE_URL =  "https://image.tmdb.org/t/p/"
     const val POSTER_IMAGE_BASE_WIDTH = "w92"
     const val BACKDROP_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/"

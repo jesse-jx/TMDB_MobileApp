@@ -14,11 +14,10 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
-        mavenCentral()
+        google() // Required for Accompanist libraries
+        mavenCentral() // For other libraries
     }
 }
 
 rootProject.name = "MovieDB2025"
 include(":app")
- 
