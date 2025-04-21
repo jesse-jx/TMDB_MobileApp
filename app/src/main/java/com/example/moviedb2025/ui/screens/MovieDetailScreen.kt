@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.OpenInNew
@@ -49,23 +51,24 @@ import com.example.moviedb2025.database.Genres
 
 @Composable
 fun MovieDetailScreen(movie: Movie,
-                      modifier: Modifier = Modifier) {
+                      modifier: Modifier) {
+    val scrollState = rememberScrollState()
     val context = LocalContext.current
     val tmdbUrl = "https://www.themoviedb.org/movie/${movie.id}"
     val imdbUrl = "https://www.imdb.com/title/${movie.imdbId}"
 
-    Column{
-        Box {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())){
+        Box(modifier = modifier) {
             AsyncImage(
                 model = Constants.BACKDROP_IMAGE_BASE_URL + Constants.BACKDROP_IMAGE_BASE_WIDTH + movie.backdropPath,
                 contentDescription = movie.title,
-                modifier = Modifier, //complete weight
-                contentScale = ContentScale.Crop
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop,
             )
         }
 
         Column(
-            modifier = Modifier.padding(start = 25.dp, top = 25.dp, end = 25.dp)){
+            modifier = Modifier.fillMaxWidth().padding(start = 25.dp, top = 25.dp, end = 25.dp)){
             Row (modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
