@@ -4,6 +4,7 @@ package com.example.moviedb2025.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.OpenInNew
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,7 +60,7 @@ fun MovieDetailScreen(movie: Movie,
     val tmdbUrl = "https://www.themoviedb.org/movie/${movie.id}"
     val imdbUrl = "https://www.imdb.com/title/${movie.imdbId}"
 
-    Column(modifier = modifier.verticalScroll(rememberScrollState())){
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         Box(modifier = modifier) {
             AsyncImage(
                 model = Constants.BACKDROP_IMAGE_BASE_URL + Constants.BACKDROP_IMAGE_BASE_WIDTH + movie.backdropPath,
@@ -68,25 +71,28 @@ fun MovieDetailScreen(movie: Movie,
         }
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 25.dp, top = 25.dp, end = 25.dp)){
-            Row (modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+            modifier = Modifier.fillMaxWidth().padding(start = 25.dp, top = 25.dp, end = 25.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = movie.title,
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
 
-                IconButton(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, tmdbUrl.toUri())
-                    context.startActivity(intent)
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.OpenInNew,
-                        contentDescription = "Open External Link",
-                        tint = Color.Black
-                    )
-                }
+//                IconButton(onClick = {
+//                    val intent = Intent(Intent.ACTION_VIEW, tmdbUrl.toUri())
+//                    context.startActivity(intent)
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Outlined.OpenInNew,
+//                        contentDescription = "Open External Link",
+//                        tint = Color.Black
+//                    )
+//                }
             }
 
             Text(
@@ -118,18 +124,66 @@ fun MovieDetailScreen(movie: Movie,
                     }
                 }
             }
-            Spacer(modifier = Modifier.size(10.dp))
+            Spacer(modifier = Modifier.size(20.dp))
 
-            OutlinedButton(onClick = {
-                val intent = Intent(Intent.ACTION_VIEW, imdbUrl.toUri())
-                context.startActivity(intent)
-            }) {
-                Text(
-                    text = "Open in IMDb",
-                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
-                )
+//            OutlinedButton(onClick = {
+//                val intent = Intent(Intent.ACTION_VIEW, imdbUrl.toUri())
+//                context.startActivity(intent)
+//            }) {
+//                Text(
+//                    text = "Open in IMDb",
+//                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
+//                )
+//            }
+//            //Spacer(modifier = Modifier.size(20.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(imdbUrl))
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF176)) // IMDb yellow
+                ) {
+                    Box(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "View on IMDb",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(tmdbUrl))
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF90CAF9)) // TMDB light blue
+                ) {
+                    Box(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "View on TMDB",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
-            //Spacer(modifier = Modifier.size(20.dp))
         }
     }
 }
