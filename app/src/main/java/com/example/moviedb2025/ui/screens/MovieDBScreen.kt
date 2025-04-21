@@ -44,7 +44,7 @@ import com.example.moviedb2025.ui.screens.MovieListScreen
 import com.example.moviedb2025.ui.screens.WatchListScreen
 import com.example.moviedb2025.viewmodel.MovieDBViewModel
 
-
+//
 enum class MovieDBScreen(@StringRes val title: Int){
     List(title = R.string.app_name),
     Detail(title = R.string.movie_detail),
