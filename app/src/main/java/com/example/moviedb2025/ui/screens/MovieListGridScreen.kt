@@ -89,7 +89,7 @@ fun MovieListItemCard2(
                 modifier = Modifier
                         .fillMaxWidth()
                         .height(180.dp),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.height(8.dp))

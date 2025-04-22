@@ -62,12 +62,11 @@ fun MovieDBAppBar(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ){
+    val darkPurple = Color(0xFF6A258A)
     CenterAlignedTopAppBar(
         title = {Text(stringResource(currScreen.title), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))},
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.primary
-            //titleContentColor = MaterialTheme.colorScheme.primary
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = darkPurple
         ),
         modifier = modifier,
         navigationIcon = {
@@ -75,7 +74,8 @@ fun MovieDBAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button)
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = Color.White
                     )
                 }
             }
