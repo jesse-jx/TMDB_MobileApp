@@ -40,6 +40,7 @@ import com.example.moviedb2025.R
 import com.example.moviedb2025.database.Movies
 import com.example.moviedb2025.ui.screens.FavouritesScreen
 import com.example.moviedb2025.ui.screens.MovieDetailScreen
+import com.example.moviedb2025.ui.screens.MovieListGridScreen
 import com.example.moviedb2025.ui.screens.MovieListScreen
 import com.example.moviedb2025.ui.screens.WatchListScreen
 import com.example.moviedb2025.viewmodel.MovieDBViewModel
@@ -61,12 +62,11 @@ fun MovieDBAppBar(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ){
+    val darkPurple = Color(0xFF6A258A)
     CenterAlignedTopAppBar(
-        title = {Text(stringResource(currScreen.title), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))},
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.primary
-            //titleContentColor = MaterialTheme.colorScheme.primary
+        title = {Text(stringResource(currScreen.title), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))},
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = darkPurple
         ),
         modifier = modifier,
         navigationIcon = {
@@ -74,7 +74,8 @@ fun MovieDBAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button)
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = Color.White
                     )
                 }
             }
@@ -85,7 +86,7 @@ fun MovieDBAppBar(
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    tint = Color.Black,
+                    tint = Color.White,
                     contentDescription = "Menu"
                 )
             }
@@ -148,7 +149,7 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
                 .padding(innerPadding)
         ){
             composable(route = MovieDBScreen.List.name){
-                MovieListScreen(
+                MovieListGridScreen(
                     movieList = Movies().getMovies(),
                     onMovieListItemClicked = { movie ->
                         viewModel.setSelectedMovie(movie)
@@ -177,7 +178,7 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
 //@Composable
 //fun GreetingPreview() {
 //    MovieDB2025Theme {
-//        MovieListItemCard(
+//        MovieListItemCard2(
 //            movie = Movie(
 //                2,
 //                "Captain America: Brave New World",

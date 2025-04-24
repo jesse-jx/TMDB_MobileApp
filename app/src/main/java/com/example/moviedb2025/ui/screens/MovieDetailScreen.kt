@@ -138,8 +138,7 @@ fun MovieDetailScreen(movie: Movie,
 //            //Spacer(modifier = Modifier.size(20.dp))
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Card(
@@ -184,6 +183,7 @@ fun MovieDetailScreen(movie: Movie,
                     }
                 }
             }
+            Spacer(modifier = Modifier.size(20.dp))
         }
     }
 }

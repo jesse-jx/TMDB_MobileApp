@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">MovieDB2025</string>
-    <string name="movie_detail">Movie details</string>
+    <string name="movie_detail">Movie Details</string>
     <string name="watchlist">Watch List</string>
-    <string name="favourited_movies">Favourite movies</string>
+    <string name="favourited_movies">Favourite Movies</string>
     <string name="back_button">back</string>
 
 </resources>
