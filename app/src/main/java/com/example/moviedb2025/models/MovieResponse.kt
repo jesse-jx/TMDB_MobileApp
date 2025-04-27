@@ -1,7 +1,7 @@
 package com.example.moviedb2025.models
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class MovieResponse(
@@ -15,5 +15,4 @@ data class MovieResponse(
     var total_pages: Int = 0,
 
     @SerialName(value = "total_results")
-    var total_results: Int = 0
-)
+    var total_results: Int = 0,)

@@ -1,6 +1,5 @@
 package com.example.moviedb2025.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -14,12 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,25 +35,57 @@ import com.example.moviedb2025.models.Movie
 import com.example.moviedb2025.utils.Constants
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.Surface
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import com.example.moviedb2025.database.Genres
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.runtime.collectAsState
+import com.example.moviedb2025.ui.theme.lightPurple
+import com.example.moviedb2025.ui.theme.onLightPurple
+import com.example.moviedb2025.viewmodel.MovieDBViewModel
+import com.example.moviedb2025.viewmodel.MovieListUiState
 
 @Composable
-fun MovieListGridScreen(movieList: List<Movie>,
+fun MovieListGridScreen(movieListUiState: MovieListUiState,
                         onMovieListItemClicked: (Movie) -> Unit,
                         modifier: Modifier = Modifier) {
-    LazyVerticalGrid( columns = GridCells.Fixed(2), // 2 columns in the grid
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.fillMaxSize() ) {
-        items(movieList) {
-                movie -> MovieListItemCard2( movie = movie,
-            onMovieListItemClicked = onMovieListItemClicked,
-            modifier = Modifier.fillMaxWidth() )
+        modifier = modifier.fillMaxSize()
+    ) {
+        when (movieListUiState) {
+            is MovieListUiState.Success -> {
+                items(movieListUiState.movies) { movie ->
+                    MovieListItemCard2(
+                        movie = movie,
+                        onMovieListItemClicked,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            is MovieListUiState.Loading -> {
+                item {
+                    Text(
+                        text = "loading...",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+
+            is MovieListUiState.Error -> {
+                item {
+                    Text(
+                        text = "Error!",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -71,10 +98,9 @@ fun MovieListItemCard2(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
-    val lightPurple = Color(0xFFE0CFE8)
     Card(
         onClick = { onMovieListItemClicked(movie) },
-        colors = CardDefaults.cardColors(containerColor = lightPurple),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -88,7 +114,7 @@ fun MovieListItemCard2(
                 contentDescription = movie.title,
                 modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp),
+                        .height(250.dp),
                 contentScale = ContentScale.Crop
             )
 
@@ -120,7 +146,7 @@ fun MovieListItemCard2(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 6.dp, end = 6.dp),
+                modifier = Modifier.padding(horizontal = 15.dp),
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -130,16 +156,16 @@ fun MovieListItemCard2(
                     modifier = Modifier
                         .horizontalScroll(scrollState)
                 ) {
-                    Genres().getGenreNames(movie.genreTag).forEach { genre ->
+                    Genres().getGenreNames(movie.genreIds).forEach { genre ->
                         Surface(
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = lightPurple,
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.wrapContentSize().padding(start = 3.dp)
                         ) {
                             Text(
                                 text = genre,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = onLightPurple,
                                 modifier = Modifier.padding(horizontal = 5.dp, vertical = 3.dp)
                             )
                         }

@@ -104,7 +104,7 @@ fun MovieListItemCard(movie: Movie,
                         modifier = Modifier
                             .horizontalScroll(scrollState)
                     ) {
-                        Genres().getGenreNames(movie.genreTag).forEach { genre ->
+                        Genres().getGenreNames(movie.genreIds).forEach { genre ->
                             Surface(
                                 color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(8.dp),

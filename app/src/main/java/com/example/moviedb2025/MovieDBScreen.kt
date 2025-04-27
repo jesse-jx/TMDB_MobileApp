@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.myapplication0.ui.screens
+package com.example.moviedb2025
 
 import kotlin.OptIn
 import androidx.annotation.StringRes
@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,15 +35,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.moviedb2025.R
-import com.example.moviedb2025.database.Movies
 import com.example.moviedb2025.ui.screens.FavouritesScreen
 import com.example.moviedb2025.ui.screens.MovieDetailScreen
 import com.example.moviedb2025.ui.screens.MovieListGridScreen
-import com.example.moviedb2025.ui.screens.MovieListScreen
 import com.example.moviedb2025.ui.screens.WatchListScreen
+import com.example.moviedb2025.ui.theme.darkPurple
 import com.example.moviedb2025.viewmodel.MovieDBViewModel
-
 
 enum class MovieDBScreen(@StringRes val title: Int){
     List(title = R.string.app_name),
@@ -62,7 +58,6 @@ fun MovieDBAppBar(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ){
-    val darkPurple = Color(0xFF6A258A)
     CenterAlignedTopAppBar(
         title = {Text(stringResource(currScreen.title), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))},
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -121,13 +116,13 @@ fun MovieDBAppBar(
     )
 }
 @Composable
-fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
-               navController: NavHostController = rememberNavController()
+fun MovieDbApp(navController: NavHostController = rememberNavController()
 ) {
-    val backStackEntity by navController.currentBackStackEntryAsState()
-
+    // Get current back stack entry
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    // Get the name of the current screen
     val currentScreen = MovieDBScreen.valueOf(
-        backStackEntity?.destination?.route ?: MovieDBScreen.List.name
+        backStackEntry?.destination?.route ?: MovieDBScreen.List.name
     )
 
     Scaffold(
@@ -140,7 +135,8 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsState()
+        val movieDBViewModel: MovieDBViewModel = viewModel(factory = MovieDBViewModel.Factory)
+
         NavHost(
             navController = navController,
             startDestination = MovieDBScreen.List.name,
@@ -150,17 +146,18 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
         ){
             composable(route = MovieDBScreen.List.name){
                 MovieListGridScreen(
-                    movieList = Movies().getMovies(),
+                    movieListUiState = movieDBViewModel.movieListUiState,
                     onMovieListItemClicked = { movie ->
-                        viewModel.setSelectedMovie(movie)
+                        movieDBViewModel.setSelectedMovie(movie)
                         navController.navigate(MovieDBScreen.Detail.name)
                     }, modifier = Modifier.fillMaxSize().padding(16.dp))
+
             }
-            composable(route = MovieDBScreen.Detail.name){
-                uiState.selectedMovie?.let { movie ->
-                    MovieDetailScreen(movie = movie,
-                        modifier = Modifier)
-                }
+            composable(route = MovieDBScreen.Detail.name) {
+                MovieDetailScreen(
+                    selectedMovieUiState = movieDBViewModel.selectedMovieUiState,
+                    modifier = Modifier
+                )
             }
             composable(route = MovieDBScreen.Favourites.name) {
                 FavouritesScreen(modifier = Modifier.fillMaxSize())
@@ -169,10 +166,9 @@ fun MovieDbApp(viewModel: MovieDBViewModel = viewModel(),
                 WatchListScreen()
             }
         }
-
-
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
