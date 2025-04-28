@@ -2,6 +2,7 @@ package com.example.moviedb2025.network
 
 import com.example.moviedb2025.models.ExternalIdsResponse
 import com.example.moviedb2025.models.MovieResponse
+import com.example.moviedb2025.models.ReviewResponse
 import com.example.moviedb2025.utils.Constants
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -27,4 +28,11 @@ interface MovieDBApiService {
         @Query("api_key")
         apiKey: String = Constants.API_KEY
     ): ExternalIdsResponse
+
+    @GET("{movie_id}/reviews")
+    suspend fun getReviews(
+        @Path("movie_id") movieId: Long,
+        @Query("api_key")
+        apiKey: String = Constants.API_KEY
+    ): ReviewResponse
 }

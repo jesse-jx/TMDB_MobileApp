@@ -38,6 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.moviedb2025.ui.screens.FavouritesScreen
 import com.example.moviedb2025.ui.screens.MovieDetailScreen
 import com.example.moviedb2025.ui.screens.MovieListGridScreen
+import com.example.moviedb2025.ui.screens.ReviewsScreen
 import com.example.moviedb2025.ui.screens.WatchListScreen
 import com.example.moviedb2025.ui.theme.darkPurple
 import com.example.moviedb2025.viewmodel.MovieDBViewModel
@@ -46,7 +47,8 @@ enum class MovieDBScreen(@StringRes val title: Int){
     List(title = R.string.app_name),
     Detail(title = R.string.movie_detail),
     Favourites(title = R.string.favourited_movies),
-    Watchlist(title = R.string.watchlist)
+    Watchlist(title = R.string.watchlist),
+    Reviews(title = R.string.reviews)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,17 +106,11 @@ fun MovieDBAppBar(
                         navController.navigate(MovieDBScreen.Favourites.name)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Reviews") },
-                    onClick = {
-                        expanded = false
-                        // Navigate or show dialog if needed
-                    }
-                )
             }
         }
     )
 }
+
 @Composable
 fun MovieDbApp(navController: NavHostController = rememberNavController()
 ) {
@@ -124,6 +120,7 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
     val currentScreen = MovieDBScreen.valueOf(
         backStackEntry?.destination?.route ?: MovieDBScreen.List.name
     )
+    val movieDBViewModel: MovieDBViewModel = viewModel(factory = MovieDBViewModel.Factory)
 
     Scaffold(
         topBar = {
@@ -135,8 +132,6 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
-        val movieDBViewModel: MovieDBViewModel = viewModel(factory = MovieDBViewModel.Factory)
-
         NavHost(
             navController = navController,
             startDestination = MovieDBScreen.List.name,
@@ -150,12 +145,16 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
                     onMovieListItemClicked = { movie ->
                         movieDBViewModel.setSelectedMovie(movie)
                         navController.navigate(MovieDBScreen.Detail.name)
-                    }, modifier = Modifier.fillMaxSize().padding(16.dp))
-
+                    },
+                    modifier = Modifier.fillMaxSize().padding(16.dp))
             }
             composable(route = MovieDBScreen.Detail.name) {
                 MovieDetailScreen(
                     selectedMovieUiState = movieDBViewModel.selectedMovieUiState,
+                    onToReviewsClicked = { movie ->
+                        movieDBViewModel.getReviews(movie.id)
+                        navController.navigate(MovieDBScreen.Reviews.name)
+                    },
                     modifier = Modifier
                 )
             }
@@ -164,6 +163,19 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
             }
             composable(route = MovieDBScreen.Watchlist.name) {
                 WatchListScreen()
+            }
+//            composable(route = "${MovieDBScreen.Reviews.name}/{movieId}") { backStackEntry ->
+//                val movieId = backStackEntry.arguments?.getString("movieId")?.toLongOrNull()
+//                if (movieId != null) {
+//                    movieDBViewModel.getReviews(movieId)
+//                    ReviewsScreen(reviewListUiState = movieDBViewModel.reviewListUiState)
+//                }
+//            }
+            composable(route = MovieDBScreen.Reviews.name) {
+                ReviewsScreen(
+                    reviewListUiState = movieDBViewModel.reviewListUiState,
+                    modifier = Modifier
+                )
             }
         }
     }

@@ -19,8 +19,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,17 +36,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.moviedb2025.utils.Constants
 import com.example.moviedb2025.database.Genres
 import com.example.moviedb2025.database.MoviesRepository
+import com.example.moviedb2025.models.Movie
 import com.example.moviedb2025.network.MovieDBApiService
+import com.example.moviedb2025.viewmodel.MovieDBViewModel
 import com.example.moviedb2025.viewmodel.SelectedMovieUiState
 
 @Composable
 fun MovieDetailScreen(selectedMovieUiState: SelectedMovieUiState,
+                      onToReviewsClicked: (Movie) -> Unit,
                       modifier: Modifier) {
-    //val scrollState = rememberScrollState()
     val context = LocalContext.current
 
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
@@ -156,6 +162,20 @@ fun MovieDetailScreen(selectedMovieUiState: SelectedMovieUiState,
                         }
                     }
                     Spacer(modifier = Modifier.size(20.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = {
+                                onToReviewsClicked(movie) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF514065)
+                            ),) {
+                            Text("To Reviews →")
+                        }
+                    }
                 }
             }
 

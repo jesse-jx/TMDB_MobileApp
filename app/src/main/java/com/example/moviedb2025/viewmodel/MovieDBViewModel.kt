@@ -12,6 +12,7 @@ import com.example.moviedb2025.MovieDBApplication
 import com.example.moviedb2025.database.MovieDBUIState
 import com.example.moviedb2025.database.MoviesRepository
 import com.example.moviedb2025.models.Movie
+import com.example.moviedb2025.models.Review
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +35,12 @@ sealed interface SelectedMovieUiState {
     object Loading: SelectedMovieUiState
 }
 
+sealed interface ReviewListUiState {
+    data class Success(val reviews: List<Review>) : ReviewListUiState
+    object Loading : ReviewListUiState
+    object Error : ReviewListUiState
+}
+
 class MovieDBViewModel(private val moviesRepository: MoviesRepository) : ViewModel() {
 
     var movieListUiState: MovieListUiState by mutableStateOf(MovieListUiState.Loading)
@@ -42,11 +49,14 @@ class MovieDBViewModel(private val moviesRepository: MoviesRepository) : ViewMod
     var selectedMovieUiState: SelectedMovieUiState by mutableStateOf(SelectedMovieUiState.Loading)
         private set
 
+    var reviewListUiState: ReviewListUiState by mutableStateOf(ReviewListUiState.Loading)
+        private set
+
     init {
         getPopularMovies()
     }
 
-    private fun getTopRatedMovies() {
+    fun getTopRatedMovies() {
         viewModelScope.launch {
             movieListUiState = MovieListUiState.Loading
             movieListUiState = try {
@@ -79,23 +89,19 @@ class MovieDBViewModel(private val moviesRepository: MoviesRepository) : ViewMod
         viewModelScope.launch {
             movieListUiState = MovieListUiState.Loading
             movieListUiState = try {
-                //MovieListUiState.Success(moviesRepository.getPopularMovies().results)
-
                 val movies = moviesRepository.getPopularMovies().results
-                // For each movie, fetch its external IDs
-                val enrichedMovies = movies.map { movie ->
+                val imdbMovies = movies.map { movie ->
                     async {
                         try {
                             val externalIds = moviesRepository.getExternalIds(movie.id)
                             movie.copy(imdbId = externalIds.imdbId)
                         } catch (e: Exception) {
-                            // In case the external ID fetch fails, return movie unchanged
                             movie
                         }
                     }
                 }.awaitAll()
 
-                MovieListUiState.Success(enrichedMovies)
+                MovieListUiState.Success(imdbMovies)
             } catch (e: IOException) {
                 MovieListUiState.Error
             } catch (e: HttpException) {
@@ -113,6 +119,20 @@ class MovieDBViewModel(private val moviesRepository: MoviesRepository) : ViewMod
                 SelectedMovieUiState.Error
             } catch (e: HttpException) {
                 SelectedMovieUiState.Error
+            }
+        }
+    }
+
+    fun getReviews(movieId: Long) {
+        viewModelScope.launch {
+            println("1")
+            reviewListUiState = ReviewListUiState.Loading
+            reviewListUiState = try {
+                ReviewListUiState.Success(moviesRepository.getReviews(movieId).results)
+            } catch (e: IOException) {
+                ReviewListUiState.Error
+            } catch (e: HttpException) {
+                ReviewListUiState.Error
             }
         }
     }

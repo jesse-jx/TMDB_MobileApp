@@ -3,6 +3,7 @@
     <string name="movie_detail">Movie Details</string>
     <string name="watchlist">Watch List</string>
     <string name="favourited_movies">Favourite Movies</string>
+    <string name="reviews">Reviews</string>
     <string name="back_button">back</string>
 
 </resources>
