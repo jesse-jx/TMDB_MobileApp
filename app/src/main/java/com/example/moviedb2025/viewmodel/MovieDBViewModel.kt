@@ -13,6 +13,7 @@ import com.example.moviedb2025.database.MovieDBUIState
 import com.example.moviedb2025.database.MoviesRepository
 import com.example.moviedb2025.models.Movie
 import com.example.moviedb2025.models.Review
+import com.example.moviedb2025.ui.screens.MovieTab
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -134,6 +135,17 @@ class MovieDBViewModel(private val moviesRepository: MoviesRepository) : ViewMod
             } catch (e: HttpException) {
                 ReviewListUiState.Error
             }
+        }
+    }
+
+    var selectedTab: MovieTab by mutableStateOf(MovieTab.Popular)
+        private set
+
+    fun onTabSelected(tab: MovieTab) {
+        selectedTab = tab
+        when (tab) {
+            MovieTab.Popular -> getPopularMovies()
+            MovieTab.TopRated -> getTopRatedMovies()
         }
     }
 

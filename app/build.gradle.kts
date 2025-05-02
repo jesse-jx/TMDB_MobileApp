@@ -57,16 +57,18 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
 
-    //Retrofit
+    //exoplayer
+    implementation (libs.androidx.media3.exoplayer)
+    implementation (libs.androidx.media3.ui)
+
+    implementation(libs.coil.compose.v270)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.retrofit)
-    implementation(libs.coil.compose.v270)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.logging.interceptor)
 
-    //Exo
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.ui)
+    // WorkManager dependency
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

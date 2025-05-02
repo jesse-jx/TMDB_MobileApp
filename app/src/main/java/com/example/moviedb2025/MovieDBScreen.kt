@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.moviedb2025.ui.screens.FavouritesScreen
 import com.example.moviedb2025.ui.screens.MovieDetailScreen
 import com.example.moviedb2025.ui.screens.MovieListGridScreen
+import com.example.moviedb2025.ui.screens.MovieTab
 import com.example.moviedb2025.ui.screens.ReviewsScreen
 import com.example.moviedb2025.ui.screens.WatchListScreen
 import com.example.moviedb2025.ui.theme.darkPurple
@@ -122,6 +124,17 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
     )
     val movieDBViewModel: MovieDBViewModel = viewModel(factory = MovieDBViewModel.Factory)
 
+    val tabs = MovieTab.values().toList()
+    var selectedTab by remember { mutableStateOf(MovieTab.Popular) }
+
+    LaunchedEffect(selectedTab) {
+        when (selectedTab) {
+            MovieTab.Popular -> movieDBViewModel.getPopularMovies()
+            MovieTab.TopRated -> movieDBViewModel.getTopRatedMovies()
+        }
+    }
+
+
     Scaffold(
         topBar = {
             MovieDBAppBar(currScreen = currentScreen,
@@ -146,7 +159,10 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
                         movieDBViewModel.setSelectedMovie(movie)
                         navController.navigate(MovieDBScreen.Detail.name)
                     },
-                    modifier = Modifier.fillMaxSize().padding(16.dp))
+                    selectedTab = selectedTab,
+                    onTabSelected = { tab -> movieDBViewModel.onTabSelected(tab) },
+                    modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding())
+                )
             }
             composable(route = MovieDBScreen.Detail.name) {
                 MovieDetailScreen(

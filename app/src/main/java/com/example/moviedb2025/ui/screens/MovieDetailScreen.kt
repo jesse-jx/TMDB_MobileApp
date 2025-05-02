@@ -196,12 +196,13 @@ fun MovieDetailScreen(selectedMovieUiState: SelectedMovieUiState,
                             Text("To Reviews →")
                         }
                     }
+                    Spacer(modifier = Modifier.size(15.dp))
                 }
             }
 
             is SelectedMovieUiState.Loading -> {
                 Text(
-                    text = "loading...",
+                    text = "Loading...",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(16.dp)
                 )

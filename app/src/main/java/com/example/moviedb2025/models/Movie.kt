@@ -15,7 +15,7 @@ data class Movie(
     var posterPath: String,
 
     @SerialName(value = "backdrop_path")
-    var backdropPath: String,
+    var backdropPath: String?=null,
 
     @SerialName(value = "release_date")
     var releaseDate: String,
