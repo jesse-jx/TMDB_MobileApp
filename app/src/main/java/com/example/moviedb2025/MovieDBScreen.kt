@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,9 @@ import com.example.moviedb2025.ui.screens.MovieTab
 import com.example.moviedb2025.ui.screens.ReviewsScreen
 import com.example.moviedb2025.ui.screens.WatchListScreen
 import com.example.moviedb2025.ui.theme.darkPurple
+import com.example.moviedb2025.utils.NetworkMonitor
 import com.example.moviedb2025.viewmodel.MovieDBViewModel
+import com.example.moviedb2025.viewmodel.MovieListUiState
 
 enum class MovieDBScreen(@StringRes val title: Int){
     List(title = R.string.app_name),
@@ -116,6 +119,7 @@ fun MovieDBAppBar(
 @Composable
 fun MovieDbApp(navController: NavHostController = rememberNavController()
 ) {
+    val context = LocalContext.current
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
@@ -125,13 +129,25 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
     val movieDBViewModel: MovieDBViewModel = viewModel(factory = MovieDBViewModel.Factory)
 
     val tabs = MovieTab.values().toList()
-    var selectedTab by remember { mutableStateOf(MovieTab.Popular) }
+    val selectedTab = movieDBViewModel.selectedTab
 
     LaunchedEffect(selectedTab) {
-        when (selectedTab) {
-            MovieTab.Popular -> movieDBViewModel.getPopularMovies()
-            MovieTab.TopRated -> movieDBViewModel.getTopRatedMovies()
-        }
+        movieDBViewModel.onTabSelected(selectedTab)
+    }
+
+    // 🔄 Reload when internet is restored and UI state is NoConnection
+    LaunchedEffect(Unit) {
+        NetworkMonitor.registerNetworkCallback(
+            context = context,
+            onAvailable = {
+                if (movieDBViewModel.movieListUiState is MovieListUiState.NoConnection) {
+                    movieDBViewModel.loadMovies(movieDBViewModel.selectedTab)
+                }
+            },
+            onLost = {
+                // Optional: could show a toast/snackbar or update state
+            }
+        )
     }
 
 

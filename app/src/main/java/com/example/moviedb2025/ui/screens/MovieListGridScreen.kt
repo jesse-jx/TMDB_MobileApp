@@ -38,6 +38,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.text.style.TextAlign
 import com.example.moviedb2025.database.Genres
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -124,6 +127,27 @@ fun MovieListGridScreen(movieListUiState: MovieListUiState,
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(16.dp)
                         )
+                    }
+                }
+
+                is MovieListUiState.NoConnection -> {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CloudOff,
+                                contentDescription = "No connection",
+                                modifier = Modifier.size(64.dp),
+                                tint = Color.Gray
+                            )
+                            Text(
+                                text = "No internet connection.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
