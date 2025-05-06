@@ -38,52 +38,117 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.text.style.TextAlign
 import com.example.moviedb2025.database.Genres
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.example.moviedb2025.ui.theme.darkPurple
 import com.example.moviedb2025.ui.theme.lightPurple
 import com.example.moviedb2025.ui.theme.onLightPurple
 import com.example.moviedb2025.viewmodel.MovieDBViewModel
 import com.example.moviedb2025.viewmodel.MovieListUiState
+import com.google.common.collect.Multimaps.index
+
+enum class MovieTab(val title: String) {
+    Popular("Popular"),
+    TopRated("Top Rated")
+}
 
 @Composable
 fun MovieListGridScreen(movieListUiState: MovieListUiState,
                         onMovieListItemClicked: (Movie) -> Unit,
+                        selectedTab: MovieTab,
+                        onTabSelected: (MovieTab) -> Unit,
                         modifier: Modifier = Modifier) {
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        when (movieListUiState) {
-            is MovieListUiState.Success -> {
-                items(movieListUiState.movies) { movie ->
-                    MovieListItemCard2(
-                        movie = movie,
-                        onMovieListItemClicked,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+    Column(modifier = modifier) {
+        val selectedColor = darkPurple
+        val unselectedColor = Color.Gray
+        val indicatorColor = darkPurple
 
-            is MovieListUiState.Loading -> {
-                item {
-                    Text(
-                        text = "loading...",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+        TabRow(selectedTabIndex = selectedTab.ordinal,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab.ordinal]),
+                    color = indicatorColor
+                )
+            } )
+            {
+            MovieTab.values().forEach { tab ->
+                Tab(
+                    selected = tab == selectedTab,
+                    onClick = { onTabSelected(tab) },
+                    text = { Text(tab.title,
+                        color = if (tab == selectedTab) selectedColor else unselectedColor) }
+                )
             }
+        }
 
-            is MovieListUiState.Error -> {
-                item {
-                    Text(
-                        text = "Error!",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(16.dp)
-                    )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier.fillMaxSize()
+        ) {
+            when (movieListUiState) {
+                is MovieListUiState.Success -> {
+                    items(movieListUiState.movies) { movie ->
+                        MovieListItemCard2(
+                            movie = movie,
+                            onMovieListItemClicked = onMovieListItemClicked,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+
+                is MovieListUiState.Loading -> {
+                    item {
+                        Text(
+                            text = "Loading...",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+
+                is MovieListUiState.Error -> {
+                    item {
+                        Text(
+                            text = "Error!",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+
+                is MovieListUiState.NoConnection -> {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CloudOff,
+                                contentDescription = "No connection",
+                                modifier = Modifier.size(64.dp),
+                                tint = Color.Gray
+                            )
+                            Text(
+                                text = "No internet connection.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -93,17 +158,17 @@ fun MovieListGridScreen(movieListUiState: MovieListUiState,
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListItemCard2(
-    movie: Movie,
-    onMovieListItemClicked: (Movie) -> Unit,
-    modifier: Modifier = Modifier
+        movie: Movie,
+        onMovieListItemClicked: (Movie) -> Unit,
+        modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
     Card(
         onClick = { onMovieListItemClicked(movie) },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
+                .fillMaxWidth()
+                .wrapContentHeight()
     ) {
         Column(
             modifier = Modifier.padding(bottom = 8.dp),
@@ -146,7 +211,7 @@ fun MovieListItemCard2(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 15.dp),
+                modifier = Modifier.padding(horizontal = 15.dp)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -154,7 +219,7 @@ fun MovieListItemCard2(
             Box(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 15.dp)) {
                 Row(
                     modifier = Modifier
-                        .horizontalScroll(scrollState)
+                            .horizontalScroll(scrollState)
                 ) {
                     Genres().getGenreNames(movie.genreIds).forEach { genre ->
                         Surface(
