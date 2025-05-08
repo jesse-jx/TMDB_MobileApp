@@ -69,8 +69,11 @@ class MovieDBViewModel(private val application: Application, private val moviesR
     var selectedTab: MovieTab by mutableStateOf(MovieTab.Popular)
         private set
 
+    private val tabsFetchedOnline = mutableSetOf<String>()
+
     init {
-        loadMovies(selectedTab)
+        loadMovies(MovieTab.Popular)
+
     }
 
     //fun getTopRatedMovies() {
@@ -154,10 +157,11 @@ class MovieDBViewModel(private val application: Application, private val moviesR
         viewModelScope.launch {
             movieListUiState = MovieListUiState.Loading
 
-            val viewType = type.name.lowercase() // "popular" or "top_rated"
+            val viewType = type.name.lowercase()
 
             try {
                 if (NetworkMonitor.isConnected(application.applicationContext)) {
+                    tabsFetchedOnline.add(viewType)
                     val response = when (type) {
                         MovieTab.Popular -> moviesRepository.getPopularMovies()
                         MovieTab.TopRated -> moviesRepository.getTopRatedMovies()
@@ -176,12 +180,21 @@ class MovieDBViewModel(private val application: Application, private val moviesR
 
                     // Cache the fetched movies
                     moviesRepository.cacheMovies(enriched, viewType)
-                    movieListUiState = MovieListUiState.Success(enriched)
+                    val cached = moviesRepository.getMoviesByViewType(viewType)
+                    if (cached.isNotEmpty()) {
+                        movieListUiState = MovieListUiState.Success(cached)
+                    } else {
+                        movieListUiState = MovieListUiState.Error // fallback if Room insert failed
+                    }
 
                 } else {
-                    val cachedMovies = moviesRepository.getMoviesByViewType(viewType)
-                    if (cachedMovies.isNotEmpty()) {
-                        movieListUiState = MovieListUiState.Success(cachedMovies)
+                    if (viewType in tabsFetchedOnline) {
+                        val cachedMovies = moviesRepository.getMoviesByViewType(viewType)
+                        if (cachedMovies.isNotEmpty()) {
+                            movieListUiState = MovieListUiState.Success(cachedMovies)
+                        } else {
+                            movieListUiState = MovieListUiState.NoConnection
+                        }
                     } else {
                         movieListUiState = MovieListUiState.NoConnection
                     }

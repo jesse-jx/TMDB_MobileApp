@@ -1,5 +1,6 @@
 package com.example.moviedb2025.database
 
+import android.util.Log
 import com.example.moviedb2025.models.ExternalIdsResponse
 import com.example.moviedb2025.models.Movie
 import com.example.moviedb2025.models.MovieResponse
@@ -18,15 +19,15 @@ interface MoviesRepository {
 class NetworkMoviesRepository(private val apiService: MovieDBApiService,
                               private val movieDao: MovieDao) : MoviesRepository {
     override suspend fun getPopularMovies(): MovieResponse {
-        val movies = apiService.getPopularMovies()
-        movieDao.insertMovies(movies.results)
-        return movies
+        val response = apiService.getPopularMovies()
+        val taggedMovies = response.results.map { it.copy(viewType = "popular") }
+        return response.copy(results = taggedMovies)
     }
 
     override suspend fun getTopRatedMovies(): MovieResponse {
-        val movies = apiService.getTopRatedMovies()
-        movieDao.insertMovies(movies.results)
-        return movies
+        val response = apiService.getTopRatedMovies()
+        val taggedMovies = response.results.map { it.copy(viewType = "toprated") }
+        return response.copy(results = taggedMovies)
     }
 
     override suspend fun getExternalIds(movieId: Long): ExternalIdsResponse {
@@ -38,11 +39,20 @@ class NetworkMoviesRepository(private val apiService: MovieDBApiService,
     }
 
     override suspend fun getMoviesByViewType(viewType: String): List<Movie> {
-        return movieDao.getMoviesByViewType(viewType)
+        val cached = movieDao.getMoviesByViewType(viewType)
+        Log.d("MoviesRepository", "Loaded ${cached.size} cached movies for $viewType")
+        return cached
     }
 
     override suspend fun cacheMovies(movies: List<Movie>, viewType: String) {
-        movieDao.deleteMoviesExcept(viewType) // Delete old cache
-        movieDao.insertMovies(movies) // Insert new movies
+        Log.d("MoviesRepository", "Caching ${movies.size} movies with viewType = $viewType")
+        movies.forEach {
+            Log.d("MoviesRepository", " -> Movie ID: ${it.id}, viewType: ${it.viewType}")
+        }
+        //movieDao.insertMovies(movies) // Insert new movies
+        //movieDao.deleteMoviesExcept(viewType)
+        // Delete old cache
+        movieDao.deleteMovies()
+        movieDao.insertMovies(movies)
     }
 }

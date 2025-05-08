@@ -135,7 +135,7 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
         movieDBViewModel.onTabSelected(selectedTab)
     }
 
-    // 🔄 Reload when internet is restored and UI state is NoConnection
+    // Reload when internet is restored and UI state is NoConnection
     LaunchedEffect(Unit) {
         NetworkMonitor.registerNetworkCallback(
             context = context,
@@ -145,7 +145,7 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
                 }
             },
             onLost = {
-                // Optional: could show a toast/snackbar or update state
+
             }
         )
     }
