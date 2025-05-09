@@ -52,7 +52,7 @@ class NetworkMoviesRepository(private val apiService: MovieDBApiService,
         //movieDao.insertMovies(movies) // Insert new movies
         //movieDao.deleteMoviesExcept(viewType)
         // Delete old cache
-        movieDao.deleteMovies()
+        movieDao.deleteMovies(viewType)
         movieDao.insertMovies(movies)
     }
 }
