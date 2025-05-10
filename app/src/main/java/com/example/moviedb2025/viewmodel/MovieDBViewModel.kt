@@ -2,6 +2,7 @@ package com.example.moviedb2025.viewmodel
 
 import android.app.Application
 import android.content.Context
+import androidx.core.content.edit
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,8 +70,14 @@ class MovieDBViewModel(private val application: Application, private val moviesR
     var selectedTab: MovieTab by mutableStateOf(MovieTab.Popular)
         private set
 
-    init {
-        loadMovies(selectedTab)
+    private val tabsFetchedOnline = mutableSetOf<String>()
+
+    fun initSelectedTab(context: Context) {
+        val prefs = context.getSharedPreferences("movie_prefs", Context.MODE_PRIVATE)
+        val saved = prefs.getString("selected_tab", MovieTab.Popular.name)
+        val savedTab = MovieTab.valueOf(saved!!)
+        selectedTab = savedTab
+        loadMovies(savedTab, context)
     }
 
     //fun getTopRatedMovies() {
@@ -145,19 +152,24 @@ class MovieDBViewModel(private val application: Application, private val moviesR
         }
     }
 
-    fun onTabSelected(tab: MovieTab) {
+    fun onTabSelected(tab: MovieTab, context: Context) {
         selectedTab = tab
-        loadMovies(tab)
+        context.getSharedPreferences("movie_prefs", Context.MODE_PRIVATE)
+            .edit() {
+                putString("selected_tab", tab.name)
+            }
+        loadMovies(tab, context)
     }
 
-    fun loadMovies(type: MovieTab) {
+    fun loadMovies(type: MovieTab, context: Context) {
         viewModelScope.launch {
             movieListUiState = MovieListUiState.Loading
 
-            val viewType = type.name.lowercase() // "popular" or "top_rated"
+            val viewType = type.name.lowercase()
 
             try {
                 if (NetworkMonitor.isConnected(application.applicationContext)) {
+                    tabsFetchedOnline.add(viewType)
                     val response = when (type) {
                         MovieTab.Popular -> moviesRepository.getPopularMovies()
                         MovieTab.TopRated -> moviesRepository.getTopRatedMovies()
@@ -176,12 +188,21 @@ class MovieDBViewModel(private val application: Application, private val moviesR
 
                     // Cache the fetched movies
                     moviesRepository.cacheMovies(enriched, viewType)
-                    movieListUiState = MovieListUiState.Success(enriched)
+                    val cached = moviesRepository.getMoviesByViewType(viewType)
+                    if (cached.isNotEmpty()) {
+                        movieListUiState = MovieListUiState.Success(cached)
+                    } else {
+                        movieListUiState = MovieListUiState.Error // fallback if Room insert failed
+                    }
 
                 } else {
-                    val cachedMovies = moviesRepository.getMoviesByViewType(viewType)
-                    if (cachedMovies.isNotEmpty()) {
-                        movieListUiState = MovieListUiState.Success(cachedMovies)
+                    if (viewType in tabsFetchedOnline) {
+                        val cachedMovies = moviesRepository.getMoviesByViewType(viewType)
+                        if (cachedMovies.isNotEmpty()) {
+                            movieListUiState = MovieListUiState.Success(cachedMovies)
+                        } else {
+                            movieListUiState = MovieListUiState.NoConnection
+                        }
                     } else {
                         movieListUiState = MovieListUiState.NoConnection
                     }
@@ -190,7 +211,6 @@ class MovieDBViewModel(private val application: Application, private val moviesR
             } catch (e: Exception) {
                 e.printStackTrace()
                 movieListUiState = MovieListUiState.Error
-                Log.e("MovieDBViewModel", "Failed to load $viewType: ${e.message}", e)
             }
         }
     }

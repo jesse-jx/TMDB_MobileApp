@@ -131,21 +131,18 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
     val tabs = MovieTab.values().toList()
     val selectedTab = movieDBViewModel.selectedTab
 
-    LaunchedEffect(selectedTab) {
-        movieDBViewModel.onTabSelected(selectedTab)
-    }
-
-    // 🔄 Reload when internet is restored and UI state is NoConnection
+    // Reload when internet is restored and UI state is NoConnection
     LaunchedEffect(Unit) {
+        movieDBViewModel.initSelectedTab(context)
         NetworkMonitor.registerNetworkCallback(
             context = context,
             onAvailable = {
                 if (movieDBViewModel.movieListUiState is MovieListUiState.NoConnection) {
-                    movieDBViewModel.loadMovies(movieDBViewModel.selectedTab)
+                    movieDBViewModel.loadMovies(movieDBViewModel.selectedTab, context)
                 }
             },
             onLost = {
-                // Optional: could show a toast/snackbar or update state
+
             }
         )
     }
@@ -176,7 +173,7 @@ fun MovieDbApp(navController: NavHostController = rememberNavController()
                         navController.navigate(MovieDBScreen.Detail.name)
                     },
                     selectedTab = selectedTab,
-                    onTabSelected = { tab -> movieDBViewModel.onTabSelected(tab) },
+                    onTabSelected = { tab -> movieDBViewModel.onTabSelected(tab, context) },
                     modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding())
                 )
             }

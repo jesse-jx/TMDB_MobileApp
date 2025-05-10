@@ -15,5 +15,7 @@ interface MovieDao {
     suspend fun getMoviesByViewType(viewType: String): List<Movie>
 
     @Query("DELETE FROM movies WHERE viewType != :viewType")
-    suspend fun deleteMoviesExcept(viewType: String)
+    suspend fun deleteMovies(viewType: String)
+
+
 }
